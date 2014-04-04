@@ -5,16 +5,18 @@ package main
 import (
     "log"
     "billionaire/network"
+    "billionaire/db"
 )
 
 
 type BillboardMgr struct {
     getChan         chan *network.HttpReq
     saveChan        chan *network.HttpReq
+    dao             *db.Dao
 }
 
 func NewBillboardMgr(g, s chan *network.HttpReq) *BillboardMgr {
-    bb := &BillboardMgr{g, s}
+    bb := &BillboardMgr{g, s, nil}
     return bb
 }
 
