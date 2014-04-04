@@ -5,7 +5,7 @@ import (
     "labix.org/v2/mgo/bson"
 )
 
-type MetaPack struct {
+type SavePack struct {
     Op          string          `json:"op"`
     Data        []DataPack      `json:"data"`
 }
@@ -19,8 +19,4 @@ type DataPack struct {
     Num         int64           `json:"num" bson:"num"`
     Time        time.Time       `json:"time" bson:"time"`
 }
-
-type    SponsorData    DataPack
-
-type    GiftData       DataPack
 

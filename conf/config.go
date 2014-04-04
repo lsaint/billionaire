@@ -14,6 +14,9 @@ func init() {
 
 
 type JsonConfig struct {
+    HttpTimeOut     int
+    HttpAddr        string 
+
     DbAddr          string      
     DbName          string      
     DbUser          string     
@@ -30,8 +33,7 @@ func (this *JsonConfig) ReadConfig() {
         log.Fatalln(err)
     }
 
-    log.Printf("%+v\n", *this)
-    log.Printf("Read Config Done")
+    log.Printf("Read Config: %+v\n", *this)
 }
 
 

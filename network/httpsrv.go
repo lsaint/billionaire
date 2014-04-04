@@ -6,11 +6,8 @@ import (
     "time"
     "io/ioutil"
     "net/http"
-)
 
-const (
-    HTTP_TIME_OUT   =   20
-    ADDR            =   ":40404"
+    "billionaire/conf"
 )
 
 
@@ -38,7 +35,7 @@ func (this *HttpSrv) Start() {
     })
 
     log.Println("httpsrv runing")
-    http.ListenAndServe(ADDR, nil)
+    http.ListenAndServe(conf.CF.HttpAddr, nil)
 }
 
 func (this *HttpSrv) process(c chan *HttpReq, async bool, w http.ResponseWriter, r *http.Request) {
@@ -55,10 +52,10 @@ func (this *HttpSrv) process(c chan *HttpReq, async bool, w http.ResponseWriter,
                 ret = <-req.Ret
             }
 
-        case <-time.After(HTTP_TIME_OUT * time.Second):
+        case <-time.After(time.Duration(conf.CF.HttpTimeOut) * time.Second):
             ret = "timeout"
     }
-    log.Println("<-->", recv_post, ret)
+    log.Println("<-->", string(recv_post), ret)
     fmt.Fprint(w, ret)
 }
 
