@@ -35,7 +35,7 @@ func (this *HttpSrv) Start() {
     })
 
     log.Println("httpsrv runing")
-    http.ListenAndServe(conf.CF.HttpAddr, nil)
+    log.Fatal(http.ListenAndServe(conf.CF.HttpAddr, nil))
 }
 
 func (this *HttpSrv) process(c chan *HttpReq, async bool, w http.ResponseWriter, r *http.Request) {
