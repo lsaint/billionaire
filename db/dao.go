@@ -2,6 +2,7 @@ package db
 
 import (
     "log"
+    "time"
     "encoding/json"
     "labix.org/v2/mgo"
     "labix.org/v2/mgo/bson"
@@ -16,6 +17,8 @@ type Dao struct {
     session         *mgo.Session
     db              *mgo.Database
     collection      *mgo.Collection
+
+    today           time.Time
 }
 
 func NewDao(cl string) *Dao {
@@ -29,7 +32,9 @@ func NewDao(cl string) *Dao {
         log.Fatalln(err)
     }
     collection := db.C(cl)
-    return &Dao{s, db, collection}
+    dao := &Dao{session: s, db:db, collection:collection}
+    dao.gentoday()
+    return dao
 }
 
 func (this *Dao) Close() {
@@ -42,6 +47,7 @@ func (this *Dao) Insert(docs ...interface{}) error {
 
 func (this *Dao) GetGiftRank(topn uint32) (ret string) {
     pipe := this.collection.Pipe([]bson.M{
+            bson.M{"$match": bson.M{"time": bson.M{"$gt": this.Today()}}},
             bson.M{"$group": bson.M{"_id": bson.M{"uid": "$uid", "name": "$name"}, 
                                     "total": bson.M{"$sum": "$num"}}},
             bson.M{"$sort": bson.M{"total": -1}},
@@ -59,5 +65,17 @@ func (this *Dao) GetGiftRank(topn uint32) (ret string) {
         log.Println("Get All err", err)
     }
     return
+}
+
+func (this *Dao) Today() time.Time {
+    if time.Now().Day() > this.today.Day() {
+        this.gentoday()
+    }
+    return this.today
+}
+
+func (this *Dao) gentoday() {
+    now := time.Now()
+    this.today = time.Date(now.Year(), now.Month(), now.Day(), 0,0,0,0, now.Location())
 }
 
