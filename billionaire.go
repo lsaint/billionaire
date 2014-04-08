@@ -19,7 +19,6 @@ type BillboardMgr struct {
 }
 
 func NewBillboardMgr(g, s chan *network.HttpReq) *BillboardMgr {
-    
     giftDao := db.NewDao("gift")
     sponsorDao := db.NewDao("sponsor")
     dt := map[string]*db.Dao{"gift": giftDao, 
@@ -49,6 +48,12 @@ func (this *BillboardMgr) Start() {
 }
 
 func (this *BillboardMgr) onGet(req *network.HttpReq) {
+    if pack, err := proto.ParseGetReq(req.Req); err == nil {
+        dao := this.name2dao[pack.Op]
+        req.Ret <- dao.GetGiftRank(pack.Param)
+    } else {
+        req.Ret <- err.Error()
+    }
 }
 
 

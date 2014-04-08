@@ -20,3 +20,18 @@ type DataPack struct {
     Time        time.Time       `json:"time" bson:"time"`
 }
 
+
+type GetPack struct {
+    Op          string          `json:"op"`
+    Action      string          `json:"action"`
+    Param       uint32          `json:"param"`
+}
+
+//type RankPack struct {
+//    Uid         uint32          `json:"uid"`
+//    Name        string          `json:"name"`
+//    Num         int64           `json:"num"`
+//}
+//
+//type RankPacks []RankPack
+
