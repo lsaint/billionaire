@@ -22,7 +22,7 @@ func NewBillboardMgr(g, s chan *network.HttpReq) *BillboardMgr {
     giftDao := db.NewDao("gift")
     sponsorDao := db.NewDao("sponsor")
     dt := map[string]*db.Dao{"gift": giftDao, 
-                            "sponsorDao": sponsorDao}
+                            "sponsor": sponsorDao}
     return &BillboardMgr{getChan: g, 
                         saveChan: s, 
                         giftDao: giftDao,
@@ -49,8 +49,11 @@ func (this *BillboardMgr) Start() {
 
 func (this *BillboardMgr) onGet(req *network.HttpReq) {
     if pack, err := proto.ParseGetReq(req.Req); err == nil {
-        dao := this.name2dao[pack.Op]
-        req.Ret <- dao.GetGiftRank(pack.Param)
+        if dao, exist := this.name2dao[pack.Op]; exist {
+            req.Ret <- dao.GetGiftRank(pack.Param)
+        } else {
+            log.Println("not exist op", pack.Op)        
+        }
     } else {
         req.Ret <- err.Error()
     }
@@ -59,10 +62,12 @@ func (this *BillboardMgr) onGet(req *network.HttpReq) {
 
 func (this *BillboardMgr) onSave(req *network.HttpReq) {
     if pack, err := proto.ParseSaveReq(req.Req); err == nil {
-        dao := this.name2dao[pack.Op]
-        for _, item := range pack.Data {
-            log.Println("item", item)
-            dao.Insert(&item)
+        if dao, exist := this.name2dao[pack.Op]; exist {
+            for _, item := range pack.Data {
+                dao.Insert(&item)
+            }
+        } else {
+            log.Println("not exist op", pack.Op)        
         }
     } else {
         log.Println("onSave err", err)        
