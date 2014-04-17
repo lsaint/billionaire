@@ -13,7 +13,7 @@ type SavePack struct {
 
 type DataPack struct {
     ID          bson.ObjectId   `json:"-" bson:"_id,omitempty"`
-    Uid         uint32          `json:"uid" bson:"uid"`
+    Uid         uint64          `json:"uid" bson:"uid"`
     Name        string          `json:"name" bson:"name"`
     Tsid        uint32          `json:"tsid" bson:"tsid"`
     Num         int64           `json:"num" bson:"num"`
