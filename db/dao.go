@@ -48,10 +48,13 @@ func (this *Dao) Insert(docs ...interface{}) error {
 func (this *Dao) GetGiftRank(topn uint32) (ret string) {
     pipe := this.collection.Pipe([]bson.M{
             bson.M{"$match": bson.M{"time": bson.M{"$gt": this.Today()}}},
-            bson.M{"$group": bson.M{"_id": bson.M{"uid": "$uid", "name": "$name"}, 
-                                    "total": bson.M{"$sum": "$num"}}},
-            bson.M{"$sort": bson.M{"total": -1}},
+            bson.M{"$group": bson.M{"_id": "$uid", 
+                                    "name": bson.M{"$last": "$name"},
+                                    "total": bson.M{"$sum": "$num"},
+                                    "time": bson.M{"$last": "$time"}}},
+            bson.M{"$sort": bson.M{"total": -1, "time": -1}},
             bson.M{"$limit": topn}, 
+            bson.M{"$project": bson.M{"_id":1, "name":1, "total":1}}, 
     })
     iter, items := pipe.Iter(), []bson.M{}
     if err := iter.All(&items); err == nil {
